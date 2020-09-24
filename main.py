@@ -22,9 +22,7 @@ Quarto = ClassComodo.Comodo(ser,"Quarto")
 Closet = ClassComodo.Comodo(ser,"Closet")
 Banheiro = ClassComodo.Comodo(ser,"Banheiro")
 Control = Controle(ser)
-#
-# Retorna Json
-#
+
 def updateStatus():
     while True:
         status = Quarto.rStatus() 
@@ -67,17 +65,18 @@ def updateStatus():
             print("Erro Status")
             pass
 
-    json = json.dumps(array)
-    return json
-
+    jsonTemp = json.dumps(array)
+    return jsonTemp
 
 app = Flask(__name__, static_folder='static')
-auth = HTTPBasicAuth()
+app.config["CLIENT_MOVIES"] = "/home/servidorgv/Área de Trabalho/Pasta sem título/VideoStreamingFlask-master/static"
+
 
 Q = multiprocessing.Queue()
 theared = ThearedCam(Q)
 
 x = 0
+
 
 @app.route('/')
 def index():
@@ -85,7 +84,7 @@ def index():
 
 
 #
-# Liga e desliga as luzes
+# Luzes
 #
 
 @app.route('/Quarto')
@@ -93,13 +92,11 @@ def quarto():
     print ('/Quarto')
     Quarto.luz(1)
     return "Quarto"
-
 @app.route('/Closet')
 def closet():
     print ('/Closet')
     Closet.luz(2)
     return "Closet"
-
 @app.route('/Banheiro')
 def banheiro():
     print ('/Banheiro')
@@ -113,6 +110,7 @@ def luminaria():
     Quarto.luz(5)
     return "Luminaria"
 
+
 @app.route('/Cor/<hue>/')
 def cor(hue):
     r, g ,b = HSLToRGB(float(hue),100,50)
@@ -122,8 +120,6 @@ def cor(hue):
     Quarto.corLed(255 - r, 255 - g, 255 - b)
     return "Cores red: "+ str(r) + " green: " + str(g) + " blue: " + str(b) 
 
-x
-
 @app.route('/Cor/Colorido')
 def colorido():
     print ('/Cor/Colorido')
@@ -131,7 +127,7 @@ def colorido():
     return "Colorido"
 
 #
-# Tranca 
+# Tranca da porta
 #
 
 @app.route('/Tranca')
@@ -147,51 +143,51 @@ def tranca():
 @app.route('/Controle/sky/power')
 def controleskypower():
     print ('/Controle/sky/power')
-    Control.control(200)
+    Control.control(10)
     return "Controle/sky/power"
 @app.route('/Controle/sky/ch+')
 def controleskychUp():
     print ('/Controle/sky/ch+')
-    Control.control(201)
+    Control.control(11)
     return "Controle/sky/ch+"    
 @app.route('/Controle/sky/ch-')
 def controleskychDown():
     print ('/Controle/sky/ch-')
-    Control.control(202)
+    Control.control(12)
     return "Controle/sky/ch-"    
 @app.route('/Controle/sky/vol+')
 def controleskyVolUp():
     print ('/Controle/sky/vol+')
-    Control.control(203)
+    Control.control(13)
     return "Controle/sky/sky/vol+"  
 @app.route('/Controle/sky/vol-')
 def controleskyVolDown():
     print ('/Controle/sky/vol-')
-    Control.control(204)
+    Control.control(14)
     return "Controle/sky/sky/vol-" 
 @app.route('/Controle/sky/mute')
 def controleskyMute():
     print ('/Controle/sky/mute')
-    Control.control(205)
+    Control.control(15)
     return "Controle/sky/sky/mute" 
 @app.route('/Controle/sky/retornar')
 def controleskyRetornar():
     print ('/Controle/sky/retornar')
-    Control.control(206)
+    Control.control(16)
     return "Controle/sky/sky/retornar" 
 @app.route('/Controle/sky/info')
 def controleskyInfo():
     print ('/Controle/sky/info')
-    Control.control(207)
+    Control.control(17)
     return "Controle/sky/sky/info" 
 @app.route('/Controle/sky/plus')
 def controleskyPlus():
     print ('/Controle/sky/plus')
-    Control.control(208)
+    Control.control(18)
     return "Controle/sky/sky/plus" 
 
 #
-# retorna Status
+# Status
 #
 
 @app.route('/Status')
@@ -210,11 +206,6 @@ def gen():
         frame = VideoCamera().get_frame_jpg(frame)
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
-
-#
-# Liga e desliga Camera
-#
-
 @app.route('/Cam/<status>')
 def ligaCam(status):
     if status == "On":
@@ -228,9 +219,6 @@ def ligaCam(status):
 
     return str(status) + " -- " + str(a)
 
-#
-# Liga e desliga gravação
-#
 @app.route('/Cam/rec/<status>')
 def recCam(status):
     if status == "True":
@@ -263,9 +251,6 @@ def getMovies(movie_name):
         print("error 404")
         abort(404)
 
-#
-# Converte cores HSL para RGB
-#
 def HSLToRGB(h,s,l):
     s = s/100
     l = l/100
