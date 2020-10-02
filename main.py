@@ -1,7 +1,5 @@
 
 from flask import Flask, render_template, Response
-from flask_socketio import SocketIO ,send, emit
-from flask_httpauth import HTTPBasicAuth
 from werkzeug.security import generate_password_hash, check_password_hash
 from camera import VideoCamera
 import multiprocessing
@@ -291,4 +289,4 @@ def HSLToRGB(h,s,l):
     return (r,g,b)
 
 if __name__ == '__main__':
-    app.run(host='192.168.1.206', debug=True)
+    app.run(host='locahost', debug=True)
